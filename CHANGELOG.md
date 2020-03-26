@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 ### Fixed
+- `axi_dw_converter`: Fix lane steering and serialization of data channels.
 
 
 ## 0.18.0 - 2020-03-24

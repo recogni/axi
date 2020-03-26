@@ -470,7 +470,7 @@ module axi_dw_upsizer #(
                     if ((b >= mst_port_offset) &&
                         (b - mst_port_offset < (1 << r_req_q.orig_ar_size)) &&
                         (b + slv_port_offset - mst_port_offset < AxiSlvPortStrbWidth)) begin
-                      r_req_d.r.data[8*b+:8] = mst_resp.r.data[8 * (b + slv_port_offset - mst_port_offset) +: 8];
+                      r_req_d.r.data[8 * (b + slv_port_offset - mst_port_offset) +: 8] = mst_resp.r.data[8*b+:8];
                     end
                   end
 
@@ -639,8 +639,8 @@ module axi_dw_upsizer #(
               if ((b >= mst_port_offset) &&
                   (b - mst_port_offset < (1 << w_req_q.aw.size)) &&
                   (b + slv_port_offset - mst_port_offset < AxiSlvPortStrbWidth)) begin
-                mst_req.w.data[8 * (b + slv_port_offset - mst_port_offset) +: 8] = slv_req_i.w.data[8 * b +: 8];
-                mst_req.w.strb[b + slv_port_offset - mst_port_offset]            = slv_req_i.w.strb[b]         ;
+                mst_req.w.data[8 * b +: 8] = slv_req_i.w.data[8 * (b + slv_port_offset - mst_port_offset) +: 8];
+                mst_req.w.strb[b]          = slv_req_i.w.strb[b + slv_port_offset - mst_port_offset]           ;
               end
           end
 

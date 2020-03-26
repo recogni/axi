@@ -439,7 +439,7 @@ module axi_dw_downsizer #(
                 if ((b >= slv_port_offset) &&
                     (b - slv_port_offset < (1 << r_req_q.orig_ar_size)) &&
                     (b + mst_port_offset - slv_port_offset < AxiMstPortStrbWidth)) begin
-                  slv_r_tran[t].data[8*(b + mst_port_offset - slv_port_offset) +: 8] = mst_resp.r.data[8 * b +: 8];
+                  slv_r_tran[t].data[8 * b +: 8] = mst_resp.r.data[8*(b + mst_port_offset - slv_port_offset) +: 8];
                 end
 
               // Acknowledgment
@@ -554,8 +554,8 @@ module axi_dw_downsizer #(
               if ((b >= slv_port_offset) &&
                   (b - slv_port_offset < (1 << w_req_q.orig_aw_size)) &&
                   (b + mst_port_offset - slv_port_offset < AxiMstPortStrbWidth)) begin
-                w_req_d.w.data[8 * b +: 8] = slv_req_i.w.data[8 * (b + mst_port_offset - slv_port_offset) +: 8];
-                w_req_d.w.strb[b]          = slv_req_i.w.strb[b + mst_port_offset - slv_port_offset]           ;
+                w_req_d.w.data[8 * (b + mst_port_offset - slv_port_offset) +: 8] = slv_req_i.w.data[8 * b +: 8];
+                w_req_d.w.strb[b + mst_port_offset - slv_port_offset]            = slv_req_i.w.strb[b]         ;
               end
 
             w_req_d.burst_len = w_req_q.burst_len - 1                                       ;
