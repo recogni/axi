@@ -1,0 +1,7 @@
+common_cells: 
+    version: 1.16.4
+    group: pulp-platform
+
+common_verification:
+    version: 0.0.1
+    group: pulp-platform
