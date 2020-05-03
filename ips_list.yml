@@ -3,5 +3,5 @@ common_cells:
     group: pulp-platform
 
 common_verification:
-    commit: v0.0.1
+    commit: v0.2.0
     group: pulp-platform
