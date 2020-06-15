@@ -333,32 +333,32 @@ module axi_lite_to_apb_intf #(
   parameter int unsigned NoRules     = 32'd1,  // Number of APB address rules
   parameter int unsigned AddrWidth   = 32'd32, // Address width
   parameter int unsigned DataWidth   = 32'd32, // Data width
-  parameter type         rule_t      = logic,  // Address Decoder rule from `common_cells`
-  // DEPENDENT PARAMERETS, DO NOT OVERWRITE!
-  parameter type              addr_t = logic [AddrWidth-1:0],
-  parameter type              data_t = logic [DataWidth-1:0],
-  parameter type              strb_t = logic [DataWidth/8-1:0],
-  parameter type              sel_t  = logic [NoApbSlaves-1:0]
+  parameter type         rule_t      = logic   // Address Decoder rule from `common_cells`
 ) (
   input  logic                    clk_i,     // Clock
   input  logic                    rst_ni,    // Asynchronous reset active low
   // AXI LITE slave port
   AXI_LITE.Slave                  slv,
   // APB master port
-  output addr_t                   paddr_o,
-  output logic  [2:0]             pprot_o,
-  output sel_t                    pselx_o,
-  output logic                    penable_o,
-  output logic                    pwrite_o,
-  output data_t                   pwdata_o,
-  output strb_t                   pstrb_o,
-  input  logic  [NoApbSlaves-1:0] pready_i,
-  input  data_t [NoApbSlaves-1:0] prdata_i,
-  input         [NoApbSlaves-1:0] pslverr_i,
+  output [AddrWidth-1:0]                   paddr_o,
+  output logic  [2:0]                      pprot_o,
+  output [NoApbSlaves-1:0]                 pselx_o,
+  output logic                             penable_o,
+  output logic                             pwrite_o,
+  output [DataWidth-1:0]                   pwdata_o,
+  output [DataWidth/8-1:0]                 pstrb_o,
+  input  logic  [NoApbSlaves-1:0]          pready_i,
+  input  [DataWidth-1:0] [NoApbSlaves-1:0] prdata_i,
+  input         [NoApbSlaves-1:0]          pslverr_i,
   // APB Slave Address Map
-  input  rule_t [NoRules-1:0]     addr_map_i
+  input  rule_t [NoRules-1:0]              addr_map_i
 );
   localparam int unsigned SelIdxWidth = NoApbSlaves > 1 ? $clog2(NoApbSlaves) : 1;
+
+  typedef logic [AddrWidth-1:0]   addr_t;
+  typedef logic [DataWidth-1:0]   data_t;
+  typedef logic [DataWidth/8-1:0] strb_t;
+  typedef logic [NoApbSlaves-1:0] sel_t;
 
   typedef struct packed {
     addr_t          paddr;   // same as AXI4-Lite

@@ -26,11 +26,9 @@ module axi_id_prepend #(
   parameter type         mst_w_chan_t      = logic, //  W Channel Type for mst port
   parameter type         mst_b_chan_t      = logic, //  B Channel Type for mst port
   parameter type         mst_ar_chan_t     = logic, // AR Channel Type for mst port
-  parameter type         mst_r_chan_t      = logic, //  R Channel Type for mst port
-  // DEPENDENT PARAMETER DO NOT OVERWRITE!
-  parameter int unsigned PreIdWidth        = AxiIdWidthMstPort - AxiIdWidthSlvPort
+  parameter type         mst_r_chan_t      = logic  //  R Channel Type for mst port
 ) (
-  input  logic [PreIdWidth-1:0] pre_id_i, // ID to be prepended
+  input  logic [(AxiIdWidthMstPort - AxiIdWidthSlvPort)-1:0] pre_id_i, // ID to be prepended
   // slave port (input), connect master modules here
   // AW channel
   input  slv_aw_chan_t [NoBus-1:0] slv_aw_chans_i,
@@ -74,6 +72,8 @@ module axi_id_prepend #(
   input  logic         [NoBus-1:0] mst_r_valids_i,
   output logic         [NoBus-1:0] mst_r_readies_o
 );
+
+  localparam int unsigned PreIdWidth        = AxiIdWidthMstPort - AxiIdWidthSlvPort;
 
   // prepend the ID
   for (genvar i = 0; i < NoBus; i++) begin : gen_id_prepend
