@@ -94,16 +94,14 @@ module axi_modify_address_intf #(
   /// ID width of slave and master port
   parameter int unsigned AXI_ID_WIDTH = 0,
   /// User signal width of slave and master port
-  parameter int unsigned AXI_USER_WIDTH = 0,
-  /// Derived (=DO NOT OVERRIDE) type of master port addresses
-  type mst_addr_t = logic [AXI_MST_PORT_ADDR_WIDTH-1:0]
+  parameter int unsigned AXI_USER_WIDTH = 0
 ) (
   /// Slave port
   AXI_BUS.Slave     slv,
   /// AW address on master port; must remain stable while an AW handshake is pending.
-  input  mst_addr_t mst_aw_addr_i,
+  input  [AXI_MST_PORT_ADDR_WIDTH-1:0] mst_aw_addr_i,
   /// AR address on master port; must remain stable while an AR handshake is pending.
-  input  mst_addr_t mst_ar_addr_i,
+  input  [AXI_MST_PORT_ADDR_WIDTH-1:0] mst_ar_addr_i,
   /// Master port
   AXI_BUS.Master    mst
 );
@@ -113,6 +111,7 @@ module axi_modify_address_intf #(
   typedef logic [AXI_DATA_WIDTH-1:0]          data_t;
   typedef logic [AXI_DATA_WIDTH/8-1:0]        strb_t;
   typedef logic [AXI_USER_WIDTH-1:0]          user_t;
+  typedef logic [AXI_MST_PORT_ADDR_WIDTH-1:0] mst_addr_t;
 
   `AXI_TYPEDEF_AW_CHAN_T(slv_aw_chan_t, slv_addr_t, id_t, user_t)
   `AXI_TYPEDEF_AW_CHAN_T(mst_aw_chan_t, mst_addr_t, id_t, user_t)

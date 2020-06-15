@@ -23,20 +23,19 @@ module axi_lite_mailbox #(
   parameter int unsigned AxiAddrWidth = 32'd0,
   parameter int unsigned AxiDataWidth = 32'd0,
   parameter type         req_lite_t   = logic,
-  parameter type         resp_lite_t  = logic,
-  // DEPENDENT PARAMETERS, DO NOT OVERRIDE!
-  parameter type         addr_t       = logic [AxiAddrWidth-1:0]
+  parameter type         resp_lite_t  = logic
 ) (
-  input  logic             clk_i,       // Clock
-  input  logic             rst_ni,      // Asynchronous reset active low
-  input  logic             test_i,      // Testmode enable
+  input  logic                    clk_i,       // Clock
+  input  logic                    rst_ni,      // Asynchronous reset active low
+  input  logic                    test_i,      // Testmode enable
   // slave ports [1:0]
-  input  req_lite_t  [1:0] slv_reqs_i,
-  output resp_lite_t [1:0] slv_resps_o,
-  output logic       [1:0] irq_o,       // interrupt output for each port
-  input  addr_t      [1:0] base_addr_i  // base address for each port
+  input  req_lite_t         [1:0] slv_reqs_i,
+  output resp_lite_t        [1:0] slv_resps_o,
+  output logic              [1:0] irq_o,       // interrupt output for each port
+  input  [AxiAddrWidth-1:0] [1:0] base_addr_i  // base address for each port
 );
   localparam int unsigned FifoUsageWidth = $clog2(MailboxDepth);
+  typedef logic [AxiAddrWidth-1:0] addr_t;
   typedef logic [AxiDataWidth-1:0] data_t;
   // usage type of the mailbox FIFO, also the type of the threshold comparison
   // is one bit wider, MSB is the fifo_full flag of the respective fifo
@@ -558,17 +557,16 @@ module axi_lite_mailbox_intf #(
   parameter bit unsigned IRQ_EDGE_TRIG  = 1'b0,
   parameter bit unsigned IRQ_ACT_HIGH   = 1'b1,
   parameter int unsigned AXI_ADDR_WIDTH = 32'd0,
-  parameter int unsigned AXI_DATA_WIDTH = 32'd0,
-  // DEPENDENT PARAMETERS, DO NOT OVERRIDE!
-  parameter type addr_t               = logic [AXI_ADDR_WIDTH-1:0]
+  parameter int unsigned AXI_DATA_WIDTH = 32'd0
 ) (
-  input  logic         clk_i,      // Clock
-  input  logic         rst_ni,     // Asynchronous reset active low
-  input  logic         test_i,     // Testmode enable
-  AXI_LITE.Slave       slv [1:0],  // slave ports [1:0]
-  output logic   [1:0] irq_o,      // interrupt output for each port
-  input  addr_t  [1:0] base_addr_i // base address for each port
+  input  logic                      clk_i,      // Clock
+  input  logic                      rst_ni,     // Asynchronous reset active low
+  input  logic                      test_i,     // Testmode enable
+  AXI_LITE.Slave                    slv [1:0],  // slave ports [1:0]
+  output logic                [1:0] irq_o,      // interrupt output for each port
+  input  [AXI_ADDR_WIDTH-1:0] [1:0] base_addr_i // base address for each port
 );
+  typedef logic [AXI_ADDR_WIDTH-1:0]   addr_t;
   typedef logic [AXI_DATA_WIDTH-1:0]   data_t;
   typedef logic [AXI_DATA_WIDTH/8-1:0] strb_t;
   `AXI_LITE_TYPEDEF_AW_CHAN_T(aw_chan_lite_t, addr_t)
