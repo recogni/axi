@@ -348,7 +348,7 @@ module axi_lite_to_apb_intf #(
   output [DataWidth-1:0]                   pwdata_o,
   output [DataWidth/8-1:0]                 pstrb_o,
   input  logic  [NoApbSlaves-1:0]          pready_i,
-  input  [DataWidth-1:0] [NoApbSlaves-1:0] prdata_i,
+  input  [NoApbSlaves-1:0] [DataWidth-1:0] prdata_i,
   input         [NoApbSlaves-1:0]          pslverr_i,
   // APB Slave Address Map
   input  rule_t [NoRules-1:0]              addr_map_i
