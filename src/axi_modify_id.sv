@@ -10,6 +10,7 @@ module axi_modify_id #(
   parameter type mst_req_t = logic,   // mst_req typedef
   parameter type mst_resp_t = logic   // mst_resp typedef
 ) (
+//lint_checking INP_NO_LOAD OFF   // unused bits 
   input  slv_req_t  slv_req_i,
   input  mst_id_t mst_aw_id_i,    // new aw_id to replace in mst_req_o
   input  mst_id_t mst_ar_id_i,    // new ar_id to replace in mst_req_o
@@ -19,8 +20,10 @@ module axi_modify_id #(
   input  slv_id_t slv_b_id_i,    // new b_id to replace in slv_resp_o
   input  slv_id_t slv_r_id_i,    // new r_id to replace in slv_resp_o
   output slv_resp_t slv_resp_o
+//lint_checking INP_NO_LOAD ON
 );
 
+//lint_checking VAR_NR_UBDL OFF    // lint is confused
   assign mst_req_o = '{
     aw: '{
       id:     mst_aw_id_i,
@@ -67,24 +70,25 @@ module axi_modify_id #(
 
     b: '{
       id:     slv_b_id_i,
-      resp:   mst_resp_i.b_resp,  
-      user:   mst_resp_i.b_user,  
+      resp:   mst_resp_i.b.resp,  
+      user:   mst_resp_i.b.user,  
       default: '0
     },
     b_valid: mst_resp_i.b_valid,
 
     r: '{
       id:     slv_r_id_i,
-      data:   mst_resp_i.r_data,  
-      resp:   mst_resp_i.r_resp,  
-      last:   mst_resp_i.r_last,  
-      user:   mst_resp_i.r_user,  
+      data:   mst_resp_i.r.data,  
+      resp:   mst_resp_i.r.resp,  
+      last:   mst_resp_i.r.last,  
+      user:   mst_resp_i.r.user,  
       default: '0
     },
     r_valid:  mst_resp_i.r_valid,
 
     default: '0
   };
+//lint_checking VAR_NR_UBDL ON
 endmodule
 
 
@@ -96,7 +100,7 @@ module axi_modify_id_intf #(
   /// ID width of slave port
   parameter int unsigned AXI_SLV_PORT_ID_WIDTH = 0,
   /// ID width of master port
-  parameter int unsigned AXI_MST_PORT_ID_WIDTH = AXI_SLV_PORT_ID_WIDTH,
+  parameter int unsigned AXI_MST_PORT_ID_WIDTH = 0,
   /// Data width of slave and master port
   parameter int unsigned AXI_DATA_WIDTH = 0,
   /// Addr width of slave and master port
@@ -104,6 +108,7 @@ module axi_modify_id_intf #(
   /// User signal width of slave and master port
   parameter int unsigned AXI_USER_WIDTH = 0
 ) (
+        //lint_checking INP_NO_LOAD OFF   // unused bits
   /// B ID to replace on slave port; must remain stable while B handshake is pending.
   input  [AXI_SLV_PORT_ID_WIDTH-1:0] slv_b_id_i,
   /// R ID to replace on slave port; must remain stable while R handshake is pending.
@@ -117,6 +122,7 @@ module axi_modify_id_intf #(
   input  [AXI_MST_PORT_ID_WIDTH-1:0] mst_ar_id_i,
   /// Master port
   AXI_BUS.Master    mst
+        //lint_checking INP_NO_LOAD ON
 );
 
   typedef logic [AXI_SLV_PORT_ID_WIDTH-1:0]   slv_id_t;
@@ -140,16 +146,20 @@ module axi_modify_id_intf #(
   `AXI_TYPEDEF_RESP_T(slv_resp_t, slv_b_chan_t, slv_r_chan_t)
   `AXI_TYPEDEF_RESP_T(mst_resp_t, mst_b_chan_t, mst_r_chan_t)
 
+//lint_checking NET_NO_LOAD OFF   // unused id bits
   slv_req_t  slv_req;
   mst_req_t  mst_req;
   slv_resp_t  slv_resp;
   mst_resp_t  mst_resp;
+//lint_checking NET_NO_LOAD ON
 
+//lint_checking ASG_MS_RPAD ASG_MS_RTRU OFF   // assignments confuse lint?
   `AXI_ASSIGN_TO_REQ(slv_req, slv)
   `AXI_ASSIGN_FROM_RESP(slv, slv_resp)
 
   `AXI_ASSIGN_FROM_REQ(mst, mst_req)
   `AXI_ASSIGN_TO_RESP(mst_resp, mst)
+//lint_checking ASG_MS_RPAD ASG_MS_RTRU ON
 
   axi_modify_id #(
     .slv_id_t   ( slv_id_t ),
@@ -157,7 +167,7 @@ module axi_modify_id_intf #(
     .slv_resp_t ( slv_resp_t  ),
     .mst_id_t   ( mst_id_t ),
     .mst_req_t  ( mst_req_t  ),
-    .mst_resp_t ( mst_resp_t  ),
+    .mst_resp_t ( mst_resp_t  )
   ) i_axi_modify_id (
     .slv_req_i     ( slv_req  ),
     .mst_aw_id_i   ( mst_aw_id_i),
