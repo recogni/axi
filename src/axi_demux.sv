@@ -423,6 +423,9 @@ module axi_demux #(
     );
 
     logic [NoMstPorts-1:0] rsp_act, mst_r_valids_masked;
+    logic slv_r_chan_last;
+
+    assign slv_r_chan_last = slv_r_chan.last;
 
     // To avoid possible interleaving, once a response on the
     // r channel is granted other requests are locked out until
@@ -431,7 +434,7 @@ module axi_demux #(
       if (!rst_ni)
         rsp_act <= '1;
       else if (slv_r_ready && slv_r_valid)
-        rsp_act <= !slv_r_chan.last ? mst_r_readies : '1;
+        rsp_act <= (!slv_r_chan_last)? mst_r_readies : '1;
     end
 
     assign mst_r_valids_masked = rsp_act & mst_r_valids; 
