@@ -422,6 +422,23 @@ module axi_demux #(
       .data_o  ( slv_resp_o.r       )
     );
 
+    logic [NoMstPorts-1:0] rsp_act, mst_r_valids_masked;
+    logic slv_r_chan_last;
+
+    assign slv_r_chan_last = slv_r_chan.last;
+
+    // To avoid possible interleaving, once a response on the
+    // r channel is granted other requests are locked out until
+    // a last assertion is observed on the granted channel
+    always_ff @(posedge clk_i) begin
+      if (!rst_ni)
+        rsp_act <= '1;
+      else if (slv_r_ready && slv_r_valid)
+        rsp_act <= (!slv_r_chan_last)? mst_r_readies : '1;
+    end
+
+    assign mst_r_valids_masked = rsp_act & mst_r_valids; 
+
     // Arbitration of the different r responses
     rr_arb_tree #(
       .NumIn    ( NoMstPorts ),
@@ -433,7 +450,7 @@ module axi_demux #(
       .rst_ni ( rst_ni        ),
       .flush_i( 1'b0          ),
       .rr_i   ( '0            ),
-      .req_i  ( mst_r_valids  ),
+      .req_i  ( mst_r_valids_masked ),
       .gnt_o  ( mst_r_readies ),
       .data_i ( mst_r_chans   ),
       .gnt_i  ( slv_r_ready   ),
