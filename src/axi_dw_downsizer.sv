@@ -387,11 +387,14 @@ module axi_dw_downsizer #(
             case (r_req_d.ar.burst)
               axi_pkg::BURST_INCR : begin
                 // Evaluate downsize ratio
-                automatic addr_t size_mask  = (1 << r_req_d.ar.size) - 1                                              ;
-                automatic addr_t conv_ratio = ((1 << r_req_d.ar.size) + AxiMstPortStrbWidth - 1) / AxiMstPortStrbWidth;
+                automatic addr_t size_mask  ;
+                automatic addr_t conv_ratio ;
+                automatic addr_t align_adj ;
+                size_mask  = (1 << r_req_d.ar.size) - 1 ;
+                conv_ratio = ((1 << r_req_d.ar.size) + AxiMstPortStrbWidth - 1) / AxiMstPortStrbWidth;
 
                 // Evaluate output burst length
-                automatic addr_t align_adj = (r_req_d.ar.addr & size_mask & ~MstPortByteMask) / AxiMstPortStrbWidth;
+                align_adj = (r_req_d.ar.addr & size_mask & ~MstPortByteMask) / AxiMstPortStrbWidth;
                 r_req_d.burst_len          = (r_req_d.ar.len + 1) * conv_ratio - align_adj - 1                     ;
 
                 if (conv_ratio != 1) begin
@@ -411,11 +414,14 @@ module axi_dw_downsizer #(
                 // Single transaction
                 if (r_req_d.ar.len == '0) begin
                   // Evaluate downsize ratio
-                  automatic addr_t size_mask  = (1 << r_req_d.ar.size) - 1                                              ;
-                  automatic addr_t conv_ratio = ((1 << r_req_d.ar.size) + AxiMstPortStrbWidth - 1) / AxiMstPortStrbWidth;
+                  automatic addr_t size_mask  ;
+                  automatic addr_t conv_ratio ;
+                  automatic addr_t align_adj ;
+                  size_mask  = (1 << r_req_d.ar.size) - 1 ;
+                  conv_ratio = ((1 << r_req_d.ar.size) + AxiMstPortStrbWidth - 1) / AxiMstPortStrbWidth;
 
                   // Evaluate output burst length
-                  automatic addr_t align_adj = (r_req_d.ar.addr & size_mask & ~MstPortByteMask) / AxiMstPortStrbWidth;
+                  align_adj = (r_req_d.ar.addr & size_mask & ~MstPortByteMask) / AxiMstPortStrbWidth;
                   r_req_d.burst_len          = (conv_ratio >= align_adj + 1) ? (conv_ratio - align_adj - 1) : 0;
 
                   if (conv_ratio != 1) begin
@@ -455,8 +461,10 @@ module axi_dw_downsizer #(
                 mst_r_ready_tran[t] = 1'b1;
 
                 if (mst_resp.r_valid) begin
-                  automatic addr_t mst_port_offset = r_req_q.ar.addr[(AxiMstPortStrbWidth == 1 ? 1 : $clog2(AxiMstPortStrbWidth)) - 1:0];
-                  automatic addr_t slv_port_offset = r_req_q.ar.addr[(AxiSlvPortStrbWidth == 1 ? 1 : $clog2(AxiSlvPortStrbWidth)) - 1:0];
+                  automatic addr_t mst_port_offset ;
+                  automatic addr_t slv_port_offset ;
+                  mst_port_offset = r_req_q.ar.addr[(AxiMstPortStrbWidth == 1 ? 1 : $clog2(AxiMstPortStrbWidth)) - 1:0];
+                  slv_port_offset = r_req_q.ar.addr[(AxiSlvPortStrbWidth == 1 ? 1 : $clog2(AxiSlvPortStrbWidth)) - 1:0];
 
                   // Serialization
                   for (int b = 0; b < AxiSlvPortStrbWidth; b++)
@@ -626,8 +634,10 @@ module axi_dw_downsizer #(
         // Request was accepted
         if (!w_req_q.aw_valid)
           if (slv_req_i.w_valid) begin
-            automatic addr_t mst_port_offset = w_req_q.aw.addr[(AxiMstPortStrbWidth == 1 ? 1 : $clog2(AxiMstPortStrbWidth)) - 1:0];
-            automatic addr_t slv_port_offset = w_req_q.aw.addr[(AxiSlvPortStrbWidth == 1 ? 1 : $clog2(AxiSlvPortStrbWidth)) - 1:0];
+            automatic addr_t mst_port_offset ;
+            automatic addr_t slv_port_offset ;
+            mst_port_offset = w_req_q.aw.addr[(AxiMstPortStrbWidth == 1 ? 1 : $clog2(AxiMstPortStrbWidth)) - 1:0];
+            slv_port_offset = w_req_q.aw.addr[(AxiSlvPortStrbWidth == 1 ? 1 : $clog2(AxiSlvPortStrbWidth)) - 1:0];
 
             // Valid output
             mst_req.w_valid = 1'b1               ;
@@ -717,11 +727,14 @@ module axi_dw_downsizer #(
         case (slv_req_i.aw.burst)
           axi_pkg::BURST_INCR: begin
             // Evaluate downsize ratio
-            automatic addr_t size_mask  = (1 << slv_req_i.aw.size) - 1                                              ;
-            automatic addr_t conv_ratio = ((1 << slv_req_i.aw.size) + AxiMstPortStrbWidth - 1) / AxiMstPortStrbWidth;
+            automatic addr_t size_mask  ;
+            automatic addr_t conv_ratio ;
+            automatic addr_t align_adj ;
+            size_mask  = (1 << slv_req_i.aw.size) - 1 ;
+            conv_ratio = ((1 << slv_req_i.aw.size) + AxiMstPortStrbWidth - 1) / AxiMstPortStrbWidth;
 
             // Evaluate output burst length
-            automatic addr_t align_adj = (slv_req_i.aw.addr & size_mask & ~MstPortByteMask) / AxiMstPortStrbWidth;
+            align_adj = (slv_req_i.aw.addr & size_mask & ~MstPortByteMask) / AxiMstPortStrbWidth;
             w_req_d.burst_len          = (slv_req_i.aw.len + 1) * conv_ratio - align_adj - 1                     ;
 
             if (conv_ratio != 1) begin
@@ -741,11 +754,14 @@ module axi_dw_downsizer #(
             // Single transaction
             if (slv_req_i.aw.len == '0) begin
               // Evaluate downsize ratio
-              automatic addr_t size_mask  = (1 << slv_req_i.aw.size) - 1                                              ;
-              automatic addr_t conv_ratio = ((1 << slv_req_i.aw.size) + AxiMstPortStrbWidth - 1) / AxiMstPortStrbWidth;
+              automatic addr_t size_mask  ;
+              automatic addr_t conv_ratio ;
+              automatic addr_t align_adj ;
+              size_mask  = (1 << slv_req_i.aw.size) - 1 ;
+              conv_ratio = ((1 << slv_req_i.aw.size) + AxiMstPortStrbWidth - 1) / AxiMstPortStrbWidth;
 
               // Evaluate output burst length
-              automatic addr_t align_adj = (slv_req_i.aw.addr & size_mask & ~MstPortByteMask) / AxiMstPortStrbWidth;
+              align_adj = (slv_req_i.aw.addr & size_mask & ~MstPortByteMask) / AxiMstPortStrbWidth;
               w_req_d.burst_len          = (conv_ratio >= align_adj + 1) ? (conv_ratio - align_adj - 1) : 0;
 
               if (conv_ratio != 1) begin
